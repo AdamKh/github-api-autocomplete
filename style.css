@@ -9,6 +9,13 @@ button {
     outline: 0;
 }
 
+.visivle {
+    display: block;
+}
+.hidden {
+    display: none;
+}
+
 .app {
     max-width: 500px;
     margin: 0 auto;
@@ -33,7 +40,6 @@ button {
     position: absolute;
     width: 100%;
     z-index: 1000;
-    display: none;
 }
 
 .dropdown__item {
@@ -48,6 +54,7 @@ button {
 
 .repos-list {
     margin-top: 200px;
+    margin-bottom: 20px;
     padding: 0;
 }
 
@@ -59,6 +66,10 @@ button {
     width: 100%;
     display: flex;
     justify-content: space-between;
+}
+
+.repos-list__item:last-child {
+    border-bottom: none;
 }
 
 .repos-list__delete {
