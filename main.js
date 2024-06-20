@@ -1,24 +1,42 @@
-
 function createElem(tagName = 'div', classList = [], inner = '') {
     const element = document.createElement(tagName);
     if (classList.length > 0) {
         element.classList.add(...classList);
     }
-    element.insertAdjacentHTML('afterbegin', inner);
+    // Вместо insertAdjacentHTML используем textContent для установки текста
+    if (inner) {
+        element.textContent = inner;
+    }
     return element;
 }
 
 function createListItem(name, owner, stars) {
-    let inner = `
-    <div class='repos-list__info'>
-        <p>Name: ${name}</p>
-        <p>Owner: ${owner}</p>
-        <p>Stars: ${stars}</p>
-    </div>
-    <div class='repos-list__delete'></div>
-    `;
-    
-    return createElem('li', ['repos-list__item'], inner)
+    const listItem = document.createElement('li');
+    listItem.classList.add('repos-list__item');
+
+    const infoDiv = document.createElement('div');
+    infoDiv.classList.add('repos-list__info');
+
+    const nameP = document.createElement('p');
+    nameP.textContent = `Name: ${name}`;
+
+    const ownerP = document.createElement('p');
+    ownerP.textContent = `Owner: ${owner}`;
+
+    const starsP = document.createElement('p');
+    starsP.textContent = `Stars: ${stars}`;
+
+    infoDiv.appendChild(nameP);
+    infoDiv.appendChild(ownerP);
+    infoDiv.appendChild(starsP);
+
+    const deleteDiv = document.createElement('div');
+    deleteDiv.classList.add('repos-list__delete');
+
+    listItem.appendChild(infoDiv);
+    listItem.appendChild(deleteDiv);
+
+    return listItem;
 }
 
 function clearElementContent(element) {
@@ -39,7 +57,7 @@ const debounce = (fn, ms) => {
 let firstFiveRepo = [];
 function onChange(e) {
     let repoName = e.target.value;
-    autocomplit.insertAdjacentHTML('afterbegin', '');
+    clearElementContent(autocomplit);
     if (repoName) {
         const url = `https://api.github.com/search/repositories?q=${repoName}&per_page=5`;
 
@@ -52,18 +70,18 @@ function onChange(e) {
             .then(data => {
                 if (Array.isArray(data.items)){
                     firstFiveRepo = data.items;
-                    let autocomplitData = '';
+                    clearElementContent(autocomplit); // Очищаем autocomplit перед добавлением новых элементов
+
                     firstFiveRepo.forEach(repos => {
-                        let autocomplistItem = createElem('div', ['dropdown__item'], repos.name);
-                        autocomplitData += autocomplistItem.outerHTML;
+                        let autocomplistItem = createElem('div', ['dropdown__item'], '');
+                        autocomplistItem.textContent = repos.name; // Используем textContent для безопасного добавления текста
+                        autocomplit.appendChild(autocomplistItem); // Добавляем элемент напрямую в autocomplit
                     });
-                    clearElementContent(autocomplit);
-                    autocomplit.insertAdjacentHTML('afterbegin', autocomplitData);
 
                     autocomplit.classList.remove('hidden');
                     autocomplit.classList.add('visible');
                 }
-            }).catch(err => console.error(err))
+            }).catch(err => console.error(err));
     } else {
         autocomplit.classList.remove('visible');
         autocomplit.classList.add('hidden');
